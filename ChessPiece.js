@@ -18,6 +18,16 @@ export default class ChessPiece {
     this.ctx.arc(this.size / 2, (this.size * 2) / 4, this.size / 5, 0, 2 * Math.PI);
     this.ctx.moveTo(this.size / 2, (this.size * 3.5) / 4);
     this.ctx.arc(this.size / 2, (this.size * 3.5) / 4, this.size / 3, Math.PI, 2 * Math.PI);
+    this.ctx.lineTo(this.size / 2, (this.size * 3.5) / 4);
+    this.ctx.lineWidth = this.size / 22;
+    this.ctx.strokeStyle = 'black';
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    this.ctx.arc(this.size / 2, this.size / 4, this.size / 10, 0, 2 * Math.PI);
+    this.ctx.moveTo(this.size / 2, (this.size * 2) / 4);
+    this.ctx.arc(this.size / 2, (this.size * 2) / 4, this.size / 5, 0, 2 * Math.PI);
+    this.ctx.moveTo(this.size / 2, (this.size * 3.5) / 4);
+    this.ctx.arc(this.size / 2, (this.size * 3.5) / 4, this.size / 3, Math.PI, 2 * Math.PI);
     this.ctx.fillStyle = this.color;
     this.ctx.fill();
     this.ctx.restore();
