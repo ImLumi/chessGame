@@ -8,7 +8,7 @@ export default class Board {
     this.isSelect = false;
     this.tableSize = tableSize;
     this.cellSize = this.tableSize / 8;
-    this.tableColors = { light: 'white', dark: 'black' };
+    this.tableColors = { light: '#eeeed2', dark: '#769656' };
     this.table = {
       a: {
         1: new Cell(this.tableColors.dark, null, { x: 0, y: 0 }, this.cellSize),
