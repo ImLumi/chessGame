@@ -4,8 +4,8 @@ import ChessPiece from './ChessPiece.js';
 /** @type {HTMLCanvasElement} */
 const canvas = document.querySelector('.board');
 const ctx = canvas.getContext('2d');
-canvas.width = 800;
-canvas.height = 800;
+canvas.width = 600;
+canvas.height = 600;
 // ctx.fillRect(50, 50, 100, 100);
 // function pawn() {
 //   ctx.beginPath();
@@ -174,8 +174,8 @@ function leftChessPieces(color) {
   board.table.h[4].piece = new ChessPiece('king', ctx, board.table.h[4].position, board.cellSize, color);
   board.table.h[5].piece = new ChessPiece('queen', ctx, board.table.h[5].position, board.cellSize, color);
 }
-leftChessPieces('DarkGreen');
-rightChessPieces('PaleGreen');
+leftChessPieces('#565352');
+rightChessPieces('#f8f8f8');
 canvas.addEventListener('mousedown', (e) => {
   const mousePos = {
     x: e.clientX - canvas.getBoundingClientRect().x,
