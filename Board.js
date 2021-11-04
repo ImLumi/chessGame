@@ -2,13 +2,18 @@
 import Cell from './Cell.js';
 
 export default class Board {
+  tableColors = { light: '#eeeed2', dark: '#769656' };
+
+  table = [];
+
   constructor(ctx, tableSize) {
     this.selectedCell = null;
+    /** @type {CanvasRenderingContext2D} */
     this.ctx = ctx;
     this.isSelect = false;
     this.tableSize = tableSize;
-    this.cellSize = this.tableSize / 8;
-    this.tableColors = { light: '#eeeed2', dark: '#769656' };
+    this.cellSize = tableSize / 8;
+    /*
     this.table = {
       a: {
         1: new Cell(this.tableColors.dark, null, { x: 0, y: 0 }, this.cellSize),
@@ -91,6 +96,34 @@ export default class Board {
         8: new Cell(this.tableColors.dark, null, { x: this.cellSize * 7, y: this.cellSize * 7 }, this.cellSize),
       },
     };
+    */
+  }
+  //  2: new Cell(this.tableColors.dark, null, { x: this.cellSize, y: this.cellSize }, this.cellSize),
+
+  initTable() {
+    for (let rowIndex = 0; rowIndex < 8; rowIndex += 1) {
+      const row = [];
+      for (let columnIndex = 0; columnIndex < 8; columnIndex += 1) {
+        const color = ((rowIndex + columnIndex) % 2 === 0) ? this.tableColors.light : this.tableColors.dark;
+
+        const pos = { x: this.cellSize * rowIndex, y: this.cellSize * columnIndex };
+        row.push(new Cell(color, null, pos, this.cellSize));
+      }
+      this.table.push(row);
+    }
+  }
+
+  rotateBoard() {
+    Object.values(this.table).forEach((row) => {
+      Object.values(row).forEach((cell) => {
+        cell.swapAxis();
+      });
+    });
+  }
+
+  resizeing(size) {
+    this.tableSize = size;
+    this.cellSize = size / 8;
   }
 
   findCell(pos) {
@@ -119,18 +152,39 @@ export default class Board {
       }
       return false;
     });
+
     if (findedCell && !this.isSelect) {
-      this.selectedCell = findedCell;
-      findedCell.changeColor();
+      if (findedCell.piece !== null) {
+        this.selectedCell = findedCell;
+        findedCell.changeColor();
+        this.isSelect = !this.isSelect;
+      }
+    } else if (findedCell === this.selectedCell || (findedCell.piece && this.selectedCell.piece && findedCell.piece.color === this.selectedCell.piece.color)) {
+      this.selectedCell.changeColor();
+      this.selectedCell = null;
       this.isSelect = !this.isSelect;
     } else if (findedCell && this.isSelect) {
       findedCell.piece = this.selectedCell.piece;
       findedCell.piece.pos = findedCell.position;
       this.selectedCell.changeColor();
       this.selectedCell.piece = null;
+      this.selectedCell = null;
       this.isSelect = !this.isSelect;
-      console.log(findedCell);
     }
-    console.log(this.isSelect);
+  }
+
+  print() {
+    this.table.forEach((row) => {
+      row.forEach((cell) => {
+        this.ctx.fillStyle = cell.color;
+        this.ctx.fillRect(cell.position.x, cell.position.y, cell.size, cell.size);
+        this.ctx.strokeRect(cell.position.x, cell.position.y, cell.size, cell.size);
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = 'black';
+        this.ctx.lineWidth = 1;
+        this.ctx.stroke();
+        if (cell.piece) cell.piece.print();
+      });
+    });
   }
 }
