@@ -188,7 +188,7 @@ export default class Board {
       console.log(dashPos);
       dashPos.forEach((posIndex) => {
         const cell = this.table[posIndex.rowIndex][posIndex.columnIndex];
-        if (cell.piece) {
+        if (cell.piece && cell.piece.color !== piece.color) {
           this.stepList.push([posIndex]);
           cell.changeColor();
         }
