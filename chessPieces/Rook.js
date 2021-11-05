@@ -25,23 +25,23 @@ export default class Rook extends ChessPiece {
     this.ctx.restore();
   }
 
-  stepRule(RowIndex, ColumnIndex) {
-    console.log(RowIndex, ColumnIndex);
+  stepRule(rowIndex, columnIndex) {
+    console.log(rowIndex, columnIndex);
     const dir1 = [];
     const dir2 = [];
     const dir3 = [];
     const dir4 = [];
-    for (let i = RowIndex + 1; i < 8; i += 1) {
-      dir1.push({ RowIndex: i, ColumnIndex });
+    for (let i = rowIndex + 1; i < 8; i += 1) {
+      dir1.push({ rowIndex: i, columnIndex });
     }
-    for (let i = RowIndex - 1; i >= 0; i -= 1) {
-      dir2.push({ RowIndex: i, ColumnIndex });
+    for (let i = rowIndex - 1; i >= 0; i -= 1) {
+      dir2.push({ rowIndex: i, columnIndex });
     }
-    for (let i = ColumnIndex + 1; i < 8; i += 1) {
-      dir3.push({ RowIndex, ColumnIndex: i });
+    for (let i = columnIndex + 1; i < 8; i += 1) {
+      dir3.push({ rowIndex, columnIndex: i });
     }
-    for (let i = ColumnIndex - 1; i >= 0; i -= 1) {
-      dir4.push({ RowIndex, ColumnIndex: i });
+    for (let i = columnIndex - 1; i >= 0; i -= 1) {
+      dir4.push({ rowIndex, columnIndex: i });
     }
     return [dir1, dir2, dir3, dir4];
   }
