@@ -26,4 +26,10 @@ export default class Cell {
     this.valami = true;
     [this.position.x, this.position.y] = [this.position.y, this.position.x];
   }
+
+  changeStepColor() {
+    if (!this.piece) {
+      this.changeColor();
+    }
+  }
 }

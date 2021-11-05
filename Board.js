@@ -1,10 +1,14 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable max-len */
 import Cell from './Cell.js';
+import Pawn from './chessPieces/Pawn.js';
 
 export default class Board {
   tableColors = { light: '#eeeed2', dark: '#769656' };
 
   table = [];
+
+  stepList = [];
 
   constructor(ctx, tableSize) {
     this.selectedCell = null;
@@ -142,34 +146,95 @@ export default class Board {
     return { columnKey, rowKey, returnCell };
   }
 
+  clearStep() {
+    if (this.stepList) {
+      this.stepList.forEach((direction) => {
+        direction.forEach((index) => {
+          this.table[index.rowIndex][index.columnIndex].changeColor();
+        });
+      });
+      this.stepList = [];
+    }
+  }
+
+  calcStep({ rowIndex, columnIndex }, piece) {
+    const calcSteps = piece.stepRule(rowIndex, columnIndex);
+    calcSteps.forEach((direction) => {
+      const directionList = [];
+      for (const MatrixIndex of direction) {
+        const checkCell = this.table[MatrixIndex.rowIndex][MatrixIndex.columnIndex];
+        if (checkCell.piece && checkCell.piece.color === piece.color) {
+          break;
+        } else if (checkCell.piece && checkCell.piece.color !== piece.color) {
+          directionList.push(MatrixIndex);
+          this.table[MatrixIndex.rowIndex][MatrixIndex.columnIndex].changeColor();
+          break;
+        }
+        directionList.push(MatrixIndex);
+        this.table[MatrixIndex.rowIndex][MatrixIndex.columnIndex].changeColor();
+      }
+      this.stepList.push(directionList);
+    });
+    if (piece instanceof Pawn) {
+      if (this.stepList.length > 0) {
+        const nextCell = this.table[this.stepList[0][0].rowIndex][this.stepList[0][0].columnIndex];
+        if (nextCell.piece) {
+          this.stepList = [];
+          nextCell.changeColor();
+        }
+      }
+      console.log(piece);
+      const dashPos = piece.dashRule(rowIndex, columnIndex);
+      console.log(dashPos);
+      dashPos.forEach((posIndex) => {
+        const cell = this.table[posIndex.rowIndex][posIndex.columnIndex];
+        if (cell.piece) {
+          this.stepList.push([posIndex]);
+          cell.changeColor();
+        }
+      });
+    }
+  }
+
   selectCell(pos) {
     let findedCell = null;
-    Object.values(this.table).some((row) => {
-      const findCell = Object.entries(row).find(({ 1: cell }) => cell.isActive(pos));
-      if (findCell) {
-        ({ 1: findedCell } = findCell);
+    let [rowIndex, columnIndex] = [[], []];
+    this.table.some((row, rIndex) => {
+      findedCell = row.find((cell, colIndex) => {
+        if (cell.isActive(pos)) {
+          columnIndex = colIndex;
+          return true;
+        }
+        return false;
+      });
+
+      if (findedCell) {
+        rowIndex = rIndex;
         return true;
       }
       return false;
     });
-
-    if (findedCell && !this.isSelect) {
-      if (findedCell.piece !== null) {
-        this.selectedCell = findedCell;
+    if (findedCell) {
+      if (!this.isSelect) {
+        if (findedCell.piece) {
+          this.calcStep({ rowIndex, columnIndex }, findedCell.piece);
+          this.selectedCell = findedCell;
+          findedCell.changeColor();
+          this.isSelect = !this.isSelect;
+        }
+      } else if (findedCell === this.selectedCell) {
+        this.clearStep();
+        this.selectedCell = null;
         findedCell.changeColor();
         this.isSelect = !this.isSelect;
+      } else if (findedCell.active) {
+        findedCell.piece = this.selectedCell.piece;
+        findedCell.piece.pos = findedCell.position;
+        this.selectedCell.changeColor();
+        this.clearStep();
+        this.selectedCell.piece = null;
+        this.isSelect = !this.isSelect;
       }
-    } else if (findedCell === this.selectedCell || (findedCell.piece && this.selectedCell.piece && findedCell.piece.color === this.selectedCell.piece.color)) {
-      this.selectedCell.changeColor();
-      this.selectedCell = null;
-      this.isSelect = !this.isSelect;
-    } else if (findedCell && this.isSelect) {
-      findedCell.piece = this.selectedCell.piece;
-      findedCell.piece.pos = findedCell.position;
-      this.selectedCell.changeColor();
-      this.selectedCell.piece = null;
-      this.selectedCell = null;
-      this.isSelect = !this.isSelect;
     }
   }
 
